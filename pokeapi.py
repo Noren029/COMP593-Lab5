@@ -1,14 +1,22 @@
-# fetch_pokemon.py
 import requests
 import sys
 
-def get_pokemon_abilities(pokemon_name):
-    url = f"https://pokeapi.co/api/v2/pokemon/{pokemon_name.lower()}"
-    response = requests.get(url)
+def fetch_abilities():
+    url = "https://pokeapi.co/api/v2/ability/"
+    abilities = []
     
-    if response.status_code != 200:
-        return f"Error: Unable to fetch data for {pokemon_name}"
+    # Paginate through abilities if necessary
+    while url:
+        response = requests.get(url)
+        data = response.json()
+        abilities.extend([ability['name'] for ability in data['results']])
+        url = data['next']
     
-    data = response.json()
-    abilities = [ability['ability']['name'] for ability in data['abilities']]
     return abilities
+
+if __name__ == "__main__":
+    abilities = fetch_abilities()
+    if abilities:
+        print(f"Fetched {len(abilities)} abilities.")
+    else:
+        print("No abilities found.")
