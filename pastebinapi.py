@@ -1,23 +1,22 @@
+# pastebin_api.py
 import requests
-import credentials  # Ensure you have credentials.py with your API key
+import credentials
 
-POST_URL = 'https://pastebin.com/api/api_post.php'
+PASTEBIN_API_URL = "https://pastebin.com/api/api_post.php"
+PASTEBIN_API_KEY = credentials.PASTEBIN_API_KEY  # Replace with your API key in credentials.py
 
-def pastebin_post(title, body_text):
-    """Creates a new Pastebin paste with Pokémon details."""
-    post_params = {
-        'api_dev_key': credentials.API_DEV_KEY,  # Fetch API key from credentials.py
-        'api_option': 'paste',
-        'api_paste_data': body_text,  # Correct parameter
-        'api_paste_private': '1',  # 1 = unlisted
-        'api_paste_name': title,
-        'api_paste_expire_date': '1M'  # 1 Month expiry
+def create_pastebin_paste(title, content):
+    data = {
+        "api_dev_key": PASTEBIN_API_KEY,
+        "api_option": "paste",
+        "api_paste_name": title,
+        "api_paste_code": content,
+        "api_paste_private": "1",  # 1 = unlisted, 2 = private
+        "api_paste_expire_date": "10M",  # Expires in 10 minutes
     }
-
-    response = requests.post(POST_URL, data=post_params)
+    response = requests.post(PASTEBIN_API_URL, data=data)
     
-    if response.ok:
-        return response.text  # Return the Pastebin URL
+    if response.status_code == 200:
+        return response.text  # Returns the paste URL
     else:
-        print(f"Error creating Pastebin paste: {response.text}")
-        return None  # Indicate failure
+        return "Error: Unable to create PasteBin paste"
