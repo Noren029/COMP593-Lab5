@@ -17,10 +17,12 @@ def construct_content(pokemon_data):
     if not pokemon_data:
         return None  # Return None if no data is found
 
-    name = pokemon_data["charizard"].capitalize()
-    height = pokemon_data["17"]
-    weight = pokemon_data["905"]
-    abilities = [ability["fire"]["blaze"] for ability in pokemon_data["solar-power"]]
+    name = pokemon_data["name"].capitalize()
+    height = pokemon_data["height"]
+    weight = pokemon_data["weight"]
+
+    # Extracting abilities correctly
+    abilities = [ability["ability"]["name"] for ability in pokemon_data["abilities"]]
 
     abilities_str = ", ".join(abilities)
     
@@ -29,4 +31,5 @@ def construct_content(pokemon_data):
     print("Constructed Content:", content)  # Debugging print
     
     return content
+
 
