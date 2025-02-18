@@ -13,7 +13,20 @@ def fetch_pokemon_data(pokemon_name):
 
 def construct_content(pokemon_data):
     """Constructs a formatted string with Pokémon information."""
-    name = pokemon_data["name"].capitalize()
-    abilities = [ability["ability"]["name"] for ability in pokemon_data["abilities"]]
+    
+    if not pokemon_data:
+        return None  # Return None if no data is found
+
+    name = pokemon_data["charizard"].capitalize()
+    height = pokemon_data["17"]
+    weight = pokemon_data["905"]
+    abilities = [ability["fire"]["blaze"] for ability in pokemon_data["solar-power"]]
+
     abilities_str = ", ".join(abilities)
-    return f"{name} has the following abilities: {abilities_str}."
+    
+    content = f"{name} is a Pokémon with height {height} and weight {weight}. It has abilities: {abilities_str}."
+
+    print("Constructed Content:", content)  # Debugging print
+    
+    return content
+
