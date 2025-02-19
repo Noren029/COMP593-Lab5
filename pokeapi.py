@@ -12,15 +12,26 @@ Usage: Import this module into your main program
 '''
 import requests
 
-def fetch_abilities():
-    url = "https://pokeapi.co/api/v2/ability/"
-    abilities = []
-    
-    # Paginate through abilities if necessary
-    while url:
-        response = requests.get(url)
-        data = response.json()
-        abilities.extend([ability['name'] for ability in data['results']])
-        url = data['next']
-    
-    return abilities
+def get_pokemon_info(pokemon):
+    """
+    Fetches information for a specified Pokémon from the PokéAPI.
+
+    Parameters:
+        pokemon (str or int): Pokémon name or PokéDex number.
+
+    Returns:
+        dict: Pokémon data if successful.
+        None: If the Pokémon is not found.
+    """
+    pokemon = str(pokemon).strip().lower()
+    print(f"Fetching data for Pokémon: {pokemon}...")
+
+    url = f"https://pokeapi.co/api/v2/pokemon/{pokemon}"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        print("Pokémon data retrieved successfully!")
+        return response.json()
+    else:
+        print(f"Error: Pokémon '{pokemon}' not found.")
+        return None

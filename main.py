@@ -12,25 +12,58 @@ Usage: Import this module into your main program
 '''
 
 import sys
-from pokeapi import fetch_abilities
-from pastebinapi import create_pastebin_paste
+from pokeapi import get_pokemon_info
+from pastebinapi import create_paste
 
-def main():
-    if len(sys.argv) != 5:
-        print("Usage: python main.py <api_dev_key> <user_api_key> <paste_title> <paste_content>")
+def get_pokemon_name():
+    """
+    Gets the Pokémon name from command-line arguments.
+
+    Returns:
+        str: Pokémon name.
+
+    Exits:
+        Prints an error and exits if no name is provided.
+    """
+    if len(sys.argv) != 2:
+        print("Error: Please provide a Pokémon name.")
+        print("Usage: python main.py <pokemon_name>")
         sys.exit(1)
     
-    api_dev_key = sys.argv[1]
-    user_api_key = sys.argv[2]
-    paste_title = sys.argv[3]
-    
-    abilities = fetch_abilities()
-    if abilities:
-        abilities_content = "\n".join(abilities)
-        paste_url = create_pastebin_paste(api_dev_key, user_api_key, paste_title, abilities_content)
+    return sys.argv[1]
+
+def construct_paste_content(pokemon_data):
+    """
+    Constructs the title and body text for PasteBin.
+
+    Parameters:
+        pokemon_data (dict): Pokémon information.
+
+    Returns:
+        tuple: (title, body) where title is formatted and body is a list of abilities.
+    """
+    name = pokemon_data["name"].capitalize()
+    abilities = [f"- {ability['ability']['name']}" for ability in pokemon_data["abilities"]]
+
+    title = f"{name}’s Abilities"
+    body = "\n".join(abilities)
+
+    return title, body
+
+def main():
+    """
+    Main function to fetch Pokémon info and create a PasteBin paste.
+    """
+    pokemon_name = get_pokemon_name()
+    pokemon_data = get_pokemon_info(pokemon_name)
+
+    if pokemon_data:
+        title, body = construct_paste_content(pokemon_data)
+        paste_url = create_paste(title, body, expire_date="1M", private=True)
         print(f"Paste created: {paste_url}")
     else:
-        print("Failed to fetch abilities.")
+        print("Failed to retrieve Pokémon information.")
 
 if __name__ == "__main__":
     main()
+
