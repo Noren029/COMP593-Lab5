@@ -11,59 +11,27 @@ Usage: Import this module into your main program
 
 '''
 
+
 import sys
-from pokeapi import get_pokemon_info
+from pokeapi import get_pokemon_abilities
 from pastebinapi import create_paste
 
-def get_pokemon_name():
-    """
-    Gets the Pokémon name from command-line arguments.
+def format_paste_title(pokemon_name):
+    return f"Abilities of {pokemon_name.title()}"
 
-    Returns:
-        str: Pokémon name.
+def format_paste_body(pokemon_name, abilities):
+    return f"{pokemon_name.title()} has the following abilities:\n" + "\n".join(abilities)
 
-    Exits:
-        Prints an error and exits if no name is provided.
-    """
+if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Error: Please provide a Pokémon name.")
         print("Usage: python main.py <pokemon_name>")
         sys.exit(1)
     
-    return sys.argv[1]
+    pokemon_name = sys.argv[1]
+    abilities = get_pokemon_abilities(pokemon_name)
+    title = format_paste_title(pokemon_name)
+    body = format_paste_body(pokemon_name, abilities)
+    paste_url = create_paste(title, body)
+    print("Paste created:", paste_url)
 
-def construct_paste_content(pokemon_data):
-    """
-    Constructs the title and body text for PasteBin.
-
-    Parameters:
-        pokemon_data (dict): Pokémon information.
-
-    Returns:
-        tuple: (title, body) where title is formatted and body is a list of abilities.
-    """
-    name = pokemon_data["name"].capitalize()
-    abilities = [f"- {ability['ability']['name']}" for ability in pokemon_data["abilities"]]
-
-    title = f"{name}’s Abilities"
-    body = "\n".join(abilities)
-
-    return title, body
-
-def main():
-    """
-    Main function to fetch Pokémon info and create a PasteBin paste.
-    """
-    pokemon_name = get_pokemon_name()
-    pokemon_data = get_pokemon_info(pokemon_name)
-
-    if pokemon_data:
-        title, body = construct_paste_content(pokemon_data)
-        paste_url = create_paste(title, body, expire_date="1M", private=True)
-        print(f"Paste created: {paste_url}")
-    else:
-        print("Failed to retrieve Pokémon information.")
-
-if __name__ == "__main__":
-    main()
 
